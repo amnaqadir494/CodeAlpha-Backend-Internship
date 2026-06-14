@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeAlpha URL Shortener</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; }
+        input { width: 90%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 95%; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        #result { margin-top: 20px; font-weight: bold; word-break: break-all; color: #333; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>CodeAlpha URL Shortener</h2>
+        <input type="url" id="longUrl" placeholder="enter your long url" required>
+        <button onclick="shortenUrl()">Shorten Link</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function shortenUrl() {
+            const longUrl = document.getElementById('longUrl').value;
+            const resultDiv = document.getElementById('result');
+            
+            if(!longUrl) return alert('first enter any URL!');
+
+            resultDiv.innerText = 'Shortening...';
+
+            try {
+                const response = await fetch('/api/shorten', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ longUrl })
+                });
+                const data = await response.json();
+                if(data.shortUrl) {
+                    resultDiv.innerHTML = `Shortened URL: <br><a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a>`;
+                } else {
+                    resultDiv.innerText = 'Error: URL short';
+                }
+            } catch (err) {
+                resultDiv.innerText = 'Server error occurred';
+            }
+        }
+    </script>
+</body>
+</html>
